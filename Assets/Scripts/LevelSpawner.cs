@@ -12,8 +12,9 @@ public class LevelSpawner : MonoBehaviour
     
     public GameObject winPrefab;
     private GameObject temp10obstacle, temp20obstacle;
-    private int level = 1, addNumber = 7;
+    private int level = 25, addNumber = 7;
     float obstacleNumber;
+    
     // Start is called before the first frame update
     void Start()
     {

@@ -6,8 +6,9 @@ public class PlayerController : MonoBehaviour
 {
     public Rigidbody rb;
     bool carpma;
-
-
+    float currunettime;
+    bool invincible;
+    public GameObject fireShild;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -25,6 +26,43 @@ public class PlayerController : MonoBehaviour
         {
             carpma = false;
         }
+
+        if (invincible)
+        {
+            currunettime -= Time.deltaTime * .35f;
+            if (!fireShild.activeInHierarchy)
+            {
+                fireShild.SetActive(true);
+            }
+        }
+        else
+        {
+            if (fireShild.activeInHierarchy)
+            {
+                fireShild.SetActive(false);
+            }
+
+            if (carpma)
+            {
+                currunettime += Time.deltaTime * 0.8f;
+            }
+            else
+            {
+                currunettime -= Time.deltaTime * 0.5f;
+            }
+        }
+        
+        if (currunettime > 1)
+        {
+            currunettime = 1;
+            invincible = true;
+        }
+        else if (currunettime <= 0)
+        {
+            currunettime= 0;
+            invincible = false;
+        }
+
     }
     private void FixedUpdate()
     {
@@ -41,14 +79,29 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (collision.gameObject.tag == "enemy")
+            if (invincible)
             {
-                Destroy(collision.transform.parent.gameObject);
+                if (collision.gameObject.tag == "enemy" || collision.gameObject.tag == "plane")
+                {
+                    Destroy(collision.transform.parent.gameObject);
+                }
+              
             }
-            else if (collision.gameObject.tag == "plane")
-            {
-                Debug.Log("Game Over");
+            else {
+
+                if (collision.gameObject.tag == "enemy")
+                {
+                    Destroy(collision.transform.parent.gameObject);
+                }
+                else if (collision.gameObject.tag == "plane")
+                {
+                    Debug.Log("Game Over");
+                }
+
+
             }
+
+            
             
         }
     }
