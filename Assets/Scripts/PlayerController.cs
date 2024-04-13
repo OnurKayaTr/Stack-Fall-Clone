@@ -83,7 +83,8 @@ public class PlayerController : MonoBehaviour
             {
                 if (collision.gameObject.tag == "enemy" || collision.gameObject.tag == "plane")
                 {
-                    Destroy(collision.transform.parent.gameObject);
+                    //Destroy(collision.transform.parent.gameObject);
+                    collision.transform.parent.GetComponent<ObstacleController>().ShatterAllObstacles();
                 }
               
             }
@@ -91,7 +92,9 @@ public class PlayerController : MonoBehaviour
 
                 if (collision.gameObject.tag == "enemy")
                 {
-                    Destroy(collision.transform.parent.gameObject);
+                    //Destroy(collision.transform.parent.gameObject);
+                    collision.transform.parent.GetComponent<ObstacleController>().ShatterAllObstacles();
+
                 }
                 else if (collision.gameObject.tag == "plane")
                 {
