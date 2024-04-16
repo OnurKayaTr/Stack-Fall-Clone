@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-
+using UnityEngine.SceneManagement;
 public class LevelSpawner : MonoBehaviour
 {
 
@@ -12,12 +12,21 @@ public class LevelSpawner : MonoBehaviour
     
     public GameObject winPrefab;
     private GameObject temp10obstacle, temp20obstacle;
-    private int level = 25, addNumber = 7;
+    private int level = 1, addNumber = 7;
     float obstacleNumber;
+
+
+
+
+
+
     
     // Start is called before the first frame update
     void Start()
+
     {
+        level = PlayerPrefs.GetInt("Level", 1);
+
         float randomnumber = Random.value;
         randomObstacleGeneretor();
         for (obstacleNumber=0; obstacleNumber> -level-addNumber; obstacleNumber -= 0.5f)
@@ -108,5 +117,14 @@ public class LevelSpawner : MonoBehaviour
             default:
                 break;
         }
+    }
+
+
+
+
+    public void NextLevel()
+    {
+        PlayerPrefs.SetInt("Level", PlayerPrefs.GetInt("Level") + 1);
+        SceneManager.LoadScene(0);
     }
 }

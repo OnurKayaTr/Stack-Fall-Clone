@@ -9,6 +9,14 @@ public class PlayerController : MonoBehaviour
     float currunettime;
     bool invincible;
     public GameObject fireShild;
+
+    public enum PlayerState
+    {
+        Prepare,Playing,Died, Finish
+    }
+    [HideInInspector]
+    public PlayerState playerstate= PlayerState.Prepare;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -17,59 +25,85 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(0))
-        {
-            carpma = true;
 
-        }
-        if (Input.GetMouseButtonUp(0))
+        if(playerstate==PlayerState.Playing)
         {
-            carpma = false;
-        }
-
-        if (invincible)
-        {
-            currunettime -= Time.deltaTime * .35f;
-            if (!fireShild.activeInHierarchy)
+            if (Input.GetMouseButtonDown(0))
             {
-                fireShild.SetActive(true);
+                carpma = true;
+
             }
-        }
-        else
-        {
-            if (fireShild.activeInHierarchy)
+            if (Input.GetMouseButtonUp(0))
             {
-                fireShild.SetActive(false);
+                carpma = false;
             }
 
-            if (carpma)
+            if (invincible)
             {
-                currunettime += Time.deltaTime * 0.8f;
+                currunettime -= Time.deltaTime * .35f;
+                if (!fireShild.activeInHierarchy)
+                {
+                    fireShild.SetActive(true);
+                }
             }
             else
             {
-                currunettime -= Time.deltaTime * 0.5f;
+                if (fireShild.activeInHierarchy)
+                {
+                    fireShild.SetActive(false);
+                }
+
+                if (carpma)
+                {
+                    currunettime += Time.deltaTime * 0.8f;
+                }
+                else
+                {
+                    currunettime -= Time.deltaTime * 0.5f;
+                }
+            }
+
+            if (currunettime > 1)
+            {
+                currunettime = 1;
+                invincible = true;
+            }
+            else if (currunettime <= 0)
+            {
+                currunettime = 0;
+                invincible = false;
             }
         }
+
+       if (playerstate==PlayerState.Prepare) {
+            if (Input.GetMouseButton(0)) {
+
+                playerstate = PlayerState.Playing;
+            }
+        } 
+
+       if (playerstate == PlayerState.Finish) {
         
-        if (currunettime > 1)
-        {
-            currunettime = 1;
-            invincible = true;
+        if(Input.GetMouseButtonDown(0))
+            {
+                FindObjectOfType<LevelSpawner>().NextLevel();
+            }
+        
         }
-        else if (currunettime <= 0)
-        {
-            currunettime= 0;
-            invincible = false;
-        }
+
 
     }
     private void FixedUpdate()
     {
-        if (carpma)
+        if(playerstate == PlayerState.Playing)
         {
-            rb.velocity = new Vector3(0, -100 * Time.fixedDeltaTime * 7, 0);
+            if (carpma)
+            {
+                rb.velocity = new Vector3(0, -100 * Time.fixedDeltaTime * 7, 0);
+            }
         }
+
+        
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -104,6 +138,10 @@ public class PlayerController : MonoBehaviour
 
             }
 
+            if(collision.gameObject.tag =="Finish" && playerstate==PlayerState.Playing)
+            {
+                playerstate = PlayerState.Finish;
+            }
             
             
         }
@@ -111,7 +149,7 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionStay(Collision collision)
     {
 
-        if (!carpma)
+        if (!carpma || collision.gameObject.tag=="Finish")
         {
             rb.velocity = new Vector3(0, 50 * Time.deltaTime * 5, 0);
         }
