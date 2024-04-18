@@ -93,6 +93,16 @@ public class PlayerController : MonoBehaviour
 
 
     }
+
+    public void shatterObstacles()
+    {
+        if(invincible) { ScoreManager.instance.addScore(1); }
+        else
+        {
+            ScoreManager.instance.addScore(2);
+        }
+    }
+
     private void FixedUpdate()
     {
         if(playerstate == PlayerState.Playing)
@@ -119,8 +129,11 @@ public class PlayerController : MonoBehaviour
                 {
                     //Destroy(collision.transform.parent.gameObject);
                     collision.transform.parent.GetComponent<ObstacleController>().ShatterAllObstacles();
+                    shatterObstacles();
+                    
+
                 }
-              
+
             }
             else {
 
@@ -128,11 +141,13 @@ public class PlayerController : MonoBehaviour
                 {
                     //Destroy(collision.transform.parent.gameObject);
                     collision.transform.parent.GetComponent<ObstacleController>().ShatterAllObstacles();
+                    shatterObstacles();
 
                 }
                 else if (collision.gameObject.tag == "plane")
                 {
                     Debug.Log("Game Over");
+                    ScoreManager.instance.ResetScore();
                 }
 
 
