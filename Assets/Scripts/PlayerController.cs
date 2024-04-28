@@ -8,8 +8,10 @@ public class PlayerController : MonoBehaviour
     bool carpma;
     float currunettime;
     bool invincible;
-    public GameObject fireShild;
 
+    public GameObject fireShild;
+    [SerializeField]
+    AudioClip win, death , idestory, destory, bounce;
     public enum PlayerState
     {
         Prepare,Playing,Died, Finish
@@ -130,7 +132,7 @@ public class PlayerController : MonoBehaviour
                     //Destroy(collision.transform.parent.gameObject);
                     collision.transform.parent.GetComponent<ObstacleController>().ShatterAllObstacles();
                     shatterObstacles();
-                    
+                    SoundManager.instance.playSoundFx(idestory, 0.5f);
 
                 }
 
@@ -142,12 +144,14 @@ public class PlayerController : MonoBehaviour
                     //Destroy(collision.transform.parent.gameObject);
                     collision.transform.parent.GetComponent<ObstacleController>().ShatterAllObstacles();
                     shatterObstacles();
+                    SoundManager.instance.playSoundFx(destory, 0.5f);
 
                 }
                 else if (collision.gameObject.tag == "plane")
                 {
                     Debug.Log("Game Over");
                     ScoreManager.instance.ResetScore();
+                    SoundManager.instance.playSoundFx(death, 0.5f);
                 }
 
 
@@ -156,6 +160,7 @@ public class PlayerController : MonoBehaviour
             if(collision.gameObject.tag =="Finish" && playerstate==PlayerState.Playing)
             {
                 playerstate = PlayerState.Finish;
+                SoundManager.instance.playSoundFx(win, 0.5f);
             }
             
             
@@ -167,6 +172,7 @@ public class PlayerController : MonoBehaviour
         if (!carpma || collision.gameObject.tag=="Finish")
         {
             rb.velocity = new Vector3(0, 50 * Time.deltaTime * 5, 0);
+            SoundManager.instance.playSoundFx(bounce, 0.5f);
         }
     }
 }
