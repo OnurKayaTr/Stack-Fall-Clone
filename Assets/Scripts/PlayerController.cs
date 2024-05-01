@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,6 +13,20 @@ public class PlayerController : MonoBehaviour
     public GameObject fireShild;
     [SerializeField]
     AudioClip win, death , idestory, destory, bounce;
+
+    public int currentObstacleNumber;
+    public int totalObstacleNumber;
+
+
+    public Image invidInvictibleSlider;
+    public GameObject InvictibleObject;
+    public GameObject gameOverUI;
+    public GameObject finishUI;
+
+
+
+
+
     public enum PlayerState
     {
         Prepare,Playing,Died, Finish
@@ -21,7 +36,13 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        totalObstacleNumber = FindObjectsOfType<ObstacleController>().Length;
+    }
+
+    private void Awake()
+    {
         rb = GetComponent<Rigidbody>();
+        currentObstacleNumber = 0;
     }
 
     // Update is called once per frame
@@ -65,15 +86,38 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
-            if (currunettime > 1)
+
+            if (currunettime >= 0.15f || invidInvictibleSlider.color == Color.red)
+            {
+                InvictibleObject.SetActive(true);
+            }
+            else
+            {
+                InvictibleObject.SetActive(false);
+            }
+
+
+
+
+            if (currunettime >= 1)
             {
                 currunettime = 1;
                 invincible = true;
+                invidInvictibleSlider.color = Color.red;
+                
             }
             else if (currunettime <= 0)
             {
                 currunettime = 0;
                 invincible = false;
+                invidInvictibleSlider.color = Color.white;
+
+            }
+
+
+            if(InvictibleObject.activeInHierarchy)
+            {
+                invidInvictibleSlider.fillAmount = currunettime / 1;
             }
         }
 
@@ -133,7 +177,7 @@ public class PlayerController : MonoBehaviour
                     collision.transform.parent.GetComponent<ObstacleController>().ShatterAllObstacles();
                     shatterObstacles();
                     SoundManager.instance.playSoundFx(idestory, 0.5f);
-
+                    currentObstacleNumber++;
                 }
 
             }
@@ -145,11 +189,14 @@ public class PlayerController : MonoBehaviour
                     collision.transform.parent.GetComponent<ObstacleController>().ShatterAllObstacles();
                     shatterObstacles();
                     SoundManager.instance.playSoundFx(destory, 0.5f);
-
+                    currentObstacleNumber++;
                 }
                 else if (collision.gameObject.tag == "plane")
                 {
                     Debug.Log("Game Over");
+                    gameOverUI.SetActive(true);
+                    playerstate = PlayerState.Finish;
+                    gameObject.GetComponent<Rigidbody>().isKinematic = true;
                     ScoreManager.instance.ResetScore();
                     SoundManager.instance.playSoundFx(death, 0.5f);
                 }
@@ -157,9 +204,18 @@ public class PlayerController : MonoBehaviour
 
             }
 
+
+
+
+            FindObjectOfType<GameUI>().levelSilderFill(currentObstacleNumber / (float)totalObstacleNumber);
+
+
             if(collision.gameObject.tag =="Finish" && playerstate==PlayerState.Playing)
             {
                 playerstate = PlayerState.Finish;
+                finishUI.SetActive(true);
+                finishUI.transform.GetChild(0).GetComponent<Text>().text = "Level" + PlayerPrefs.GetInt("Level", 1);
+
                 SoundManager.instance.playSoundFx(win, 0.5f);
             }
             

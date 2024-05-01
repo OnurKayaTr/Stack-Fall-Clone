@@ -8,12 +8,13 @@ public class ScoreManager : MonoBehaviour
     public static ScoreManager instance;
 
     public int score;
+
     public Text scoreTXT;
 
     private void Awake()
     {
         makesingolton();
-        
+        scoreTXT = GameObject.Find("T1").GetComponent<Text>();
     }
 
     private void makesingolton()
@@ -37,8 +38,11 @@ public class ScoreManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-    }
+        if (scoreTXT == null)
+        {
+            scoreTXT = GameObject.Find("T1").GetComponent<Text>();
+        }
+}
     public void addScore(int value )
     {
         score += value;
@@ -46,6 +50,8 @@ public class ScoreManager : MonoBehaviour
         {
             PlayerPrefs.SetInt("HighScore", score);
         }
+
+        scoreTXT.text = score.ToString();
     }
 
     public void ResetScore()
